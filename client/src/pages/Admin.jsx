@@ -5,6 +5,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Trash2, Edit } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const metroStations = [
     "20 Yanvar", "28 May", "8 Noyabr", "Avtovağzal", "Azadlıq prospekti", "Bakmil",
     "Cəfər Cabbarlı", "Dərnəgül", "Elmlər Akademiyası", "Əhmədli", "Gənclik",
@@ -92,7 +94,7 @@ const Admin = () => {
                 });
                 alert('Elan məlumatları yeniləndi!');
             } else {
-                await axios.post('${API_URL}/api/properties', data, {
+                await axios.post(`${API_URL}/api/properties`, data, {
                     headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
                 });
                 alert('Elan uğurla əlavə edildi!');
