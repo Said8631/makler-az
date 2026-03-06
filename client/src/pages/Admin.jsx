@@ -50,7 +50,7 @@ const Admin = () => {
 
     const fetchProperties = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/api/properties');
+            const res = await axios.get(`${API_URL}/api/properties`);
             setProperties(res.data.properties);
         } catch (error) {
             console.error(error);
@@ -87,12 +87,12 @@ const Admin = () => {
 
         try {
             if (editingId) {
-                await axios.put(`http://localhost:3000/api/properties/${editingId}`, data, {
+                await axios.put(`${API_URL}/api/properties/${editingId}`, data, {
                     headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
                 });
                 alert('Elan məlumatları yeniləndi!');
             } else {
-                await axios.post('http://localhost:3000/api/properties', data, {
+                await axios.post('${API_URL}/api/properties', data, {
                     headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
                 });
                 alert('Elan uğurla əlavə edildi!');
@@ -124,7 +124,7 @@ const Admin = () => {
         if (!window.confirm("Bu elanı silmək istədiyinizə əminsiniz?")) return;
 
         try {
-            await axios.delete(`http://localhost:3000/api/properties/${id}`, { headers: getAuthHeaders() });
+            await axios.delete(`${API_URL}/api/properties/${id}`, { headers: getAuthHeaders() });
             fetchProperties();
         } catch (error) {
             console.error(error);
@@ -267,7 +267,7 @@ const Admin = () => {
                                         <td style={{ padding: '12px' }}>#{p.id}</td>
                                         <td style={{ padding: '12px' }}>
                                             {p.images && p.images.length > 0 ? (
-                                                <img src={`http://localhost:3000${p.images[0]}`} alt="cover" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                <img src={`${API_URL}${p.images[0]}`} alt="cover" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
                                             ) : (
                                                 <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px' }}></div>
                                             )}

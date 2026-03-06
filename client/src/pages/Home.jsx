@@ -49,7 +49,7 @@ const Home = () => {
 
         const delayDebounceFn = setTimeout(async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/api/properties?searchQuery=${encodeURIComponent(searchInput)}`);
+                const res = await axios.get(`${API_URL}/api/properties?searchQuery=${encodeURIComponent(searchInput)}`);
                 setSearchResults(res.data.properties);
                 setShowDropdown(true);
             } catch (error) {
@@ -64,7 +64,7 @@ const Home = () => {
         setLoading(true);
         try {
             const queryParams = new URLSearchParams(params).toString();
-            const res = await axios.get(`http://localhost:3000/api/properties?${queryParams}`);
+            const res = await axios.get(`${API_URL}/api/properties?${queryParams}`);
             setProperties(res.data.properties);
         } catch (error) {
             console.error(error);
@@ -145,7 +145,7 @@ const Home = () => {
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px'
                                             }}>
                                                 {p.images && p.images.length > 0 ? (
-                                                    <img src={`http://localhost:3000${p.images[0]}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
+                                                    <img src={`${API_URL}${p.images[0]}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
                                                 ) : (
                                                     <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ImageIcon size={20} color="#94a3b8" /></div>
                                                 )}
@@ -203,7 +203,7 @@ const Home = () => {
                             </button>
 
                             {p.images && p.images.length > 0 ? (
-                                <img src={`http://localhost:3000${p.images[0]}`} alt={p.title} className="property-image" />
+                                <img src={`${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                             ) : (
                                 <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><ImageIcon size={48} /></div>
                             )}

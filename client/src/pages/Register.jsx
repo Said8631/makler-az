@@ -13,7 +13,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:3000/api/register', { username, password });
+            const res = await axios.post(`${API_URL}/api/register`, { username, password });
             if (res.data.success) {
                 alert('Qeydiyyat uğurla tamamlandı. Zəhmət olmasa daxil olun.');
                 navigate('/user-login');

@@ -55,7 +55,7 @@ const Favorites = () => {
                             </button>
 
                             {p.images && p.images.length > 0 ? (
-                                <img src={`http://localhost:3000${p.images[0]}`} alt={p.title} className="property-image" />
+                                <img src={`${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                             ) : (
                                 <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><ImageIcon size={48} /></div>
                             )}

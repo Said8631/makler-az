@@ -14,13 +14,13 @@ const UserLogin = () => {
         e.preventDefault();
         try {
             if (username === 'Feqan' && password === 'Feqan1234F') {
-                const res = await axios.post('http://localhost:3000/api/login', { username, password });
+                const res = await axios.post(`${API_URL}/api/login`, { username, password });
                 if (res.data.success) {
                     localStorage.setItem('adminToken', res.data.token);
                     navigate('/admin');
                 }
             } else {
-                const res = await axios.post('http://localhost:3000/api/user/login', { username, password });
+                const res = await axios.post(`${API_URL}/api/user/login`, { username, password });
                 if (res.data.success) {
                     localStorage.setItem('userToken', res.data.token);
                     localStorage.setItem('username', res.data.username);
