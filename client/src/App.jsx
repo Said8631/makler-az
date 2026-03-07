@@ -13,7 +13,7 @@ import Contact from './pages/Contact'
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('adminToken');
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/user-login" replace />;
   }
   return children;
 };

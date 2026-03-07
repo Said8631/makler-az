@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { MapPin, Bed, Square, Image as ImageIcon, Heart } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Favorites = () => {
     const [favorites, setFavorites] = useState([]);
     const navigate = useNavigate();
