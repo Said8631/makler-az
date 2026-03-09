@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd client && npm install && npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": "client/dist",
+  "framework": "vite",
+  "env": {
+    "VITE_API_URL": {
+      "description": "API endpoint URL (məs: https://your-backend.railway.app)",
+      "required": false,
+      "default": "http://localhost:3000"
+    }
+  }
+}
