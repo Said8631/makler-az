@@ -54,37 +54,38 @@ export const ToastProvider = ({ children }) => {
                             cursor: 'pointer',
                             pointerEvents: 'all',
                             animation: toast.closing
-                                ? 'toastSlideOut 0.4s cubic-bezier(.4,0,.2,1) forwards'
-                                : 'toastSlideIn 0.4s cubic-bezier(.4,0,.2,1) forwards',
-                            background: toast.type === 'success' ? 'linear-gradient(135deg,#1a7f4e,#22c55e)'
-                                : toast.type === 'error' ? 'linear-gradient(135deg,#9b1c1c,#ef4444)'
-                                : toast.type === 'warning' ? 'linear-gradient(135deg,#92400e,#f59e0b)'
-                                : 'linear-gradient(135deg,#1e40af,#3b82f6)',
+                                ? 'toastSlideOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                                : 'toastSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                            background: toast.type === 'success' ? 'rgba(21, 128, 61, 0.95)'
+                                : toast.type === 'error' ? 'rgba(185, 28, 28, 0.95)'
+                                : toast.type === 'warning' ? 'rgba(180, 83, 9, 0.95)'
+                                : 'rgba(29, 78, 216, 0.95)',
                             color: '#fff',
-                            backdropFilter: 'blur(8px)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
                         }}
                     >
-                        <span style={{ fontSize: '20px', flexShrink: 0, marginTop: '1px' }}>
-                            {toast.type === 'success' ? '✅'
-                                : toast.type === 'error' ? '❌'
-                                : toast.type === 'warning' ? '⚠️'
-                                : 'ℹ️'}
+                        <span style={{ fontSize: '20px', flexShrink: 0, marginTop: '2px' }}>
+                            {toast.type === 'success' ? '✨'
+                                : toast.type === 'error' ? '🌋'
+                                : toast.type === 'warning' ? '⚡'
+                                : '💎'}
                         </span>
-                        <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: 1.5, flex: 1 }}>
+                        <span style={{ fontSize: '15px', fontWeight: 600, lineHeight: 1.4, flex: 1 }}>
                             {toast.message}
                         </span>
-                        <span style={{ fontSize: '18px', opacity: 0.7, flexShrink: 0, marginTop: '-2px' }}>×</span>
+                        <span style={{ fontSize: '22px', opacity: 0.8, flexShrink: 0, marginTop: '-3px', cursor: 'pointer' }}>×</span>
                     </div>
                 ))}
             </div>
             <style>{`
                 @keyframes toastSlideIn {
-                    from { opacity: 0; transform: translateX(120px) scale(0.9); }
-                    to   { opacity: 1; transform: translateX(0) scale(1); }
+                    from { opacity: 0; transform: translateX(40px) translateY(-10px) scale(0.9); }
+                    to   { opacity: 1; transform: translateX(0) translateY(0) scale(1); }
                 }
                 @keyframes toastSlideOut {
                     from { opacity: 1; transform: translateX(0) scale(1); }
-                    to   { opacity: 0; transform: translateX(120px) scale(0.9); }
+                    to   { opacity: 0; transform: translateX(60px) scale(0.8); }
                 }
             `}</style>
         </ToastContext.Provider>

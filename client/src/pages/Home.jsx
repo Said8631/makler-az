@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { Search, MapPin, Bed, Square, Image as ImageIcon, Heart } from 'lucide-react';
+import { Search, MapPin, Home as HomeIcon, Maximize, Heart, Bed, Square } from 'lucide-react';
+import { useToast } from '../components/Toast';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -17,6 +18,8 @@ const metroStations = [
 ].sort((a, b) => a.localeCompare(b, 'az'));
 
 const Home = () => {
+    const navigate = useNavigate();
+    const { addToast } = useToast();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(false);
     const [favorites, setFavorites] = useState([]);
@@ -32,9 +35,12 @@ const Home = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const navigate = useNavigate();
     const userToken = localStorage.getItem('userToken');
     const adminToken = localStorage.getItem('adminToken');
+
+    const getAuthHeaders = () => ({
+        Authorization: `Bearer ${userToken}`,
+    });
 
     useEffect(() => {
         fetchProperties();
@@ -48,7 +54,7 @@ const Home = () => {
             const res = await axios.get(`${API_URL}/api/user/favorites`, {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
-            setFavorites(res.data.properties);
+            setFavorites(res.data.properties.map(p => p._id)); // Store only IDs
         } catch (error) {
             console.error('Error fetching favorites', error);
         }
@@ -97,33 +103,35 @@ const Home = () => {
         e.stopPropagation();
 
         if (!userToken) {
-            alert('Sevimlilərə əlavə etmək üçün zəhmət olmasa adi istifadəçi kimi daxil olun (Adminlər sevimlilərə əlavə edə bilməz).');
+            addToast('Sevimlilərə əlavə etmək üçün zəhmət olmasa adi istifadəçi kimi daxil olun.', 'warning');
             if (!adminToken) navigate('/user-login');
             return;
         }
+        if (adminToken) {
+            addToast('Adminlər sevimlilərə əlavə edə bilməz.', 'info');
+            return;
+        }
 
-        const isFav = isFavorite(property._id || property.id);
         const propId = property._id || property.id;
+        const isFav = isFavorite(propId);
 
         try {
             if (isFav) {
-                await axios.delete(`${API_URL}/api/user/favorites/${propId}`, {
-                    headers: { Authorization: `Bearer ${userToken}` }
-                });
-                setFavorites(favorites.filter(p => (p._id || p.id) !== propId));
+                await axios.delete(`${API_URL}/api/user/favorites/${propId}`, { headers: getAuthHeaders() });
+                setFavorites(prev => prev.filter(favId => favId !== propId));
+                addToast('Sevimlilərdən silindi', 'info');
             } else {
-                await axios.post(`${API_URL}/api/user/favorites`, { property_id: propId }, {
-                    headers: { Authorization: `Bearer ${userToken}` }
-                });
-                setFavorites([...favorites, property]);
+                await axios.post(`${API_URL}/api/user/favorites`, { property_id: propId }, { headers: getAuthHeaders() });
+                setFavorites(prev => [...prev, propId]);
+                addToast('Sevimlilərə əlavə edildi!', 'success');
             }
         } catch (error) {
             console.error('Error toggling favorite', error);
-            alert('Xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.');
+            addToast('Xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.', 'error');
         }
     };
 
-    const isFavorite = (id) => favorites.some(p => (p._id || p.id) === id);
+    const isFavorite = (id) => favorites.includes(id);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', paddingBottom: '70px' }}>
@@ -165,14 +173,14 @@ const Home = () => {
                                 }}>
                                     {searchResults.length > 0 ? (
                                         searchResults.map(p => (
-                                            <div key={p.id} className="dropdown-item" onClick={() => navigate(`/property/${p.id}`)} style={{
+                                            <div key={p._id || p.id} className="dropdown-item" onClick={() => navigate(`/property/${p._id || p.id}`)} style={{
                                                 padding: '12px 16px', borderBottom: '1px solid var(--border-color)',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px'
                                             }}>
                                                 {p.images && p.images.length > 0 ? (
                                                     <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
                                                 ) : (
-                                                    <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ImageIcon size={20} color="#94a3b8" /></div>
+                                                    <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><HomeIcon size={20} color="#94a3b8" /></div>
                                                 )}
                                                 <div>
                                                     <div style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>{p.price.toLocaleString()} AZN</div>
@@ -217,8 +225,8 @@ const Home = () => {
                 )}
 
                 <div className="listings-grid">
-                    {properties.map(p => (
-                        <div key={p._id || p.id} className="property-card" onClick={() => navigate(`/property/${p._id || p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                    {properties.map((p, index) => (
+                        <div key={p._id} className="property-card" onClick={() => navigate(`/property/${p._id || p.id}`)} style={{ cursor: 'pointer', position: 'relative', animationDelay: `${index * 0.1}s` }}>
                             <button
                                 onClick={(e) => toggleFavorite(e, p)}
                                 style={{ position: 'absolute', top: '10px', right: '10px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}
@@ -230,7 +238,7 @@ const Home = () => {
                             {p.images && p.images.length > 0 ? (
                                 <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                             ) : (
-                                <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><ImageIcon size={48} /></div>
+                                <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><HomeIcon size={48} /></div>
                             )}
                             <div className="property-info">
                                 <div className="property-price">{p.price.toLocaleString()} AZN</div>
