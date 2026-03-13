@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useToast } from '../components/Toast';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -10,27 +11,37 @@ const UserLogin = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { addToast } = useToast();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         try {
             if (username === 'Feqan' && password === 'Feqan1234F') {
                 const res = await axios.post(`${API_URL}/api/login`, { username, password });
                 if (res.data.success) {
                     localStorage.setItem('adminToken', res.data.token);
-                    navigate('/admin');
+                    addToast('Admin olaraq daxil oldunuz!', 'success');
+                    setTimeout(() => navigate('/admin'), 600);
                 }
             } else {
                 const res = await axios.post(`${API_URL}/api/user/login`, { username, password });
                 if (res.data.success) {
                     localStorage.setItem('userToken', res.data.token);
                     localStorage.setItem('username', res.data.username);
-                    navigate('/');
+                    addToast(`Xoş gəldiniz, ${res.data.username}!`, 'success');
+                    setTimeout(() => navigate('/'), 600);
                 }
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Giriş uğursuz oldu');
+            const msg = err.response?.data?.message || 'Giriş uğursuz oldu';
+            setError(msg);
+            addToast(msg, 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -50,7 +61,7 @@ const UserLogin = () => {
                             <label>Şifrə</label>
                             <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Şifrəniz" />
                         </div>
-                        <button type="submit" className="search-btn" style={{ marginTop: '20px' }}>Daxil Ol</button>
+                        <button type="submit" className="search-btn" style={{ marginTop: '20px' }} disabled={loading}>{loading ? 'Yoxlanır...' : 'Daxil Ol'}</button>
                     </form>
                     <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)' }}>
                         Hesabınız yoxdur? <Link to="/register" style={{ color: 'var(--primary-color)', fontWeight: '600' }}>Qeydiyyatdan Keç</Link>

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useToast } from '../components/Toast';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -10,18 +11,26 @@ const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { addToast } = useToast();
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError('');
         try {
             const res = await axios.post(`${API_URL}/api/register`, { username, password });
             if (res.data.success) {
-                alert('Qeydiyyat uğurla tamamlandı. Zəhmət olmasa daxil olun.');
-                navigate('/user-login');
+                addToast('Qeydiyyat uğurla tamamlandı! Daxil olun.', 'success');
+                setTimeout(() => navigate('/user-login'), 1000);
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Qeydiyyat zamanı xəta baş verdi');
+            const msg = err.response?.data?.message || 'Qeydiyyat zamanı xəta baş verdi';
+            setError(msg);
+            addToast(msg, 'error');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -41,7 +50,7 @@ const Register = () => {
                             <label>Şifrə</label>
                             <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} required placeholder="Şifrəniz" />
                         </div>
-                        <button type="submit" className="search-btn" style={{ marginTop: '20px' }}>Qeydiyyatdan Keç</button>
+                        <button type="submit" className="search-btn" style={{ marginTop: '20px' }} disabled={loading}>{loading ? 'Gözləyin...' : 'Qeydiyyatdan Keç'}</button>
                     </form>
                     <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px', color: 'var(--text-muted)' }}>
                         Artıq hesabınız var? <Link to="/user-login" style={{ color: 'var(--primary-color)', fontWeight: '600' }}>Daxil Ol</Link>

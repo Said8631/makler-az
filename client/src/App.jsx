@@ -8,6 +8,7 @@ import PropertyDetails from './pages/PropertyDetails'
 import Favorites from './pages/Favorites'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import { ToastProvider } from './components/Toast'
 
 // Protected Route Component for Admin
 const ProtectedRoute = ({ children }) => {
@@ -18,33 +19,34 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Protected Route Component for Users (Optional for other areas, but doing logic directly in pages)
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <ToastProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        {/* Auth Routes */}
-        <Route path="/user-login" element={<UserLogin />} />
-        <Route path="/register" element={<Register />} />
+          {/* Auth Routes */}
+          <Route path="/user-login" element={<UserLogin />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Info Routes */}
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+          {/* Info Routes */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
-        {/* App Routes */}
-        <Route path="/property/:id" element={<PropertyDetails />} />
-        <Route path="/favorites" element={<Favorites />} />
+          {/* App Routes */}
+          <Route path="/property/:id" element={<PropertyDetails />} />
+          <Route path="/favorites" element={<Favorites />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={
-          <ProtectedRoute>
-            <Admin />
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </Router>
+          {/* Admin Routes */}
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </Router>
+    </ToastProvider>
   )
 }
 

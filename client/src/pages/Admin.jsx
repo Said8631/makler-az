@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Trash2, Edit } from 'lucide-react';
+import { useToast } from '../components/Toast';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -30,6 +31,7 @@ const regions = [
 
 const Admin = () => {
     const navigate = useNavigate();
+    const { addToast } = useToast();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -92,12 +94,12 @@ const Admin = () => {
                 await axios.put(`${API_URL}/api/properties/${editingId}`, data, {
                     headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
                 });
-                alert('Elan məlumatları yeniləndi!');
+                addToast('Elan məlumatları yeniləndi!', 'success');
             } else {
                 await axios.post(`${API_URL}/api/properties`, data, {
                     headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() }
                 });
-                alert('Elan uğurla əlavə edildi!');
+                addToast('Elan uğurla əlavə edildi!', 'success');
             }
 
             setEditingId(null);
@@ -111,11 +113,11 @@ const Admin = () => {
         } catch (error) {
             console.error(error);
             if (error.response?.status === 401 || error.response?.status === 403) {
-                alert('Sessiya bitib, yenidən daxil olun');
+                addToast('Sessiya bitib, yenidən daxil olun', 'error');
                 localStorage.removeItem('adminToken');
                 navigate('/login');
             } else {
-                alert('Elan əlavə edilərkən xəta baş verdi');
+                addToast('Elan əlavə edilərkən xəta baş verdi', 'error');
             }
         } finally {
             setLoading(false);
@@ -130,7 +132,7 @@ const Admin = () => {
             fetchProperties();
         } catch (error) {
             console.error(error);
-            alert("Silinərkən xəta baş verdi");
+            addToast('Silinərkən xəta baş verdi', 'error');
         }
     };
 
