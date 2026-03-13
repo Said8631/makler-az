@@ -58,7 +58,7 @@ const PropertyDetails = () => {
                     <div style={{ position: 'relative', width: '100%', maxWidth: '800px', margin: '0 auto', background: '#000', borderRadius: '12px', overflow: 'hidden', height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {property.images && property.images.length > 0 ? (
                             <>
-                                <img src={`${API_URL}${property.images[currentImageIndex]}`} alt="Əmlak" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+                                <img src={property.images[currentImageIndex].startsWith('http') ? property.images[currentImageIndex] : `${API_URL}${property.images[currentImageIndex]}`} alt="Əmlak" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
                                 {property.images.length > 1 && (
                                     <>
                                         <button onClick={prevImage} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.7)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -111,7 +111,7 @@ const PropertyDetails = () => {
                             {related.map(p => (
                                 <div key={p.id} className="property-card" onClick={() => navigate(`/property/${p.id}`)} style={{ cursor: 'pointer' }}>
                                     {p.images && p.images.length > 0 ? (
-                                        <img src={`${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
+                                        <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                                     ) : (
                                         <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><ImageIcon size={48} /></div>
                                     )}

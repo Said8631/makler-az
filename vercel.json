@@ -3,11 +3,12 @@
   "installCommand": "npm install",
   "outputDirectory": "client/dist",
   "framework": "vite",
-  "env": {
-    "VITE_API_URL": {
-      "description": "API endpoint URL (məs: https://your-backend.railway.app)",
-      "required": false,
-      "default": "http://localhost:3000"
-    }
-  }
+  "builds": [
+    { "src": "server/index.js", "use": "@vercel/node" },
+    { "src": "client/package.json", "use": "@vercel/static-build" }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/server/index.js" },
+    { "source": "/(.*)", "destination": "/client/dist/index.html" }
+  ]
 }

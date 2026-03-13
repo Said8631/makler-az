@@ -38,9 +38,21 @@ const Home = () => {
 
     useEffect(() => {
         fetchProperties();
-        const storedFavs = JSON.parse(localStorage.getItem('makler_favs')) || [];
-        setFavorites(storedFavs);
-    }, []);
+        if (userToken) {
+            fetchFavorites();
+        }
+    }, [userToken]);
+
+    const fetchFavorites = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/api/user/favorites`, {
+                headers: { Authorization: `Bearer ${userToken}` }
+            });
+            setFavorites(res.data.properties);
+        } catch (error) {
+            console.error('Error fetching favorites', error);
+        }
+    };
 
     useEffect(() => {
         if (!searchInput.trim()) {
@@ -81,26 +93,37 @@ const Home = () => {
         setShowDropdown(false);
     };
 
-    const toggleFavorite = (e, property) => {
+    const toggleFavorite = async (e, property) => {
         e.stopPropagation();
 
-        if (!userToken && !adminToken) {
-            alert('Sevimlilərə əlavə etmək üçün zəhmət olmasa Qeydiyyatdan keçin və ya Daxil olun.');
-            navigate('/user-login');
+        if (!userToken) {
+            alert('Sevimlilərə əlavə etmək üçün zəhmət olmasa adi istifadəçi kimi daxil olun (Adminlər sevimlilərə əlavə edə bilməz).');
+            if (!adminToken) navigate('/user-login');
             return;
         }
 
-        let updatedFavs = [...favorites];
-        if (updatedFavs.find(p => p.id === property.id)) {
-            updatedFavs = updatedFavs.filter(p => p.id !== property.id);
-        } else {
-            updatedFavs.push(property);
+        const isFav = isFavorite(property._id || property.id);
+        const propId = property._id || property.id;
+
+        try {
+            if (isFav) {
+                await axios.delete(`${API_URL}/api/user/favorites/${propId}`, {
+                    headers: { Authorization: `Bearer ${userToken}` }
+                });
+                setFavorites(favorites.filter(p => (p._id || p.id) !== propId));
+            } else {
+                await axios.post(`${API_URL}/api/user/favorites`, { property_id: propId }, {
+                    headers: { Authorization: `Bearer ${userToken}` }
+                });
+                setFavorites([...favorites, property]);
+            }
+        } catch (error) {
+            console.error('Error toggling favorite', error);
+            alert('Xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.');
         }
-        setFavorites(updatedFavs);
-        localStorage.setItem('makler_favs', JSON.stringify(updatedFavs));
     };
 
-    const isFavorite = (id) => favorites.some(p => p.id === id);
+    const isFavorite = (id) => favorites.some(p => (p._id || p.id) === id);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', paddingBottom: '70px' }}>
@@ -147,7 +170,7 @@ const Home = () => {
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px'
                                             }}>
                                                 {p.images && p.images.length > 0 ? (
-                                                    <img src={`${API_URL}${p.images[0]}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
+                                                    <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} alt="" />
                                                 ) : (
                                                     <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ImageIcon size={20} color="#94a3b8" /></div>
                                                 )}
@@ -195,17 +218,17 @@ const Home = () => {
 
                 <div className="listings-grid">
                     {properties.map(p => (
-                        <div key={p.id} className="property-card" onClick={() => navigate(`/property/${p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
+                        <div key={p._id || p.id} className="property-card" onClick={() => navigate(`/property/${p._id || p.id}`)} style={{ cursor: 'pointer', position: 'relative' }}>
                             <button
                                 onClick={(e) => toggleFavorite(e, p)}
                                 style={{ position: 'absolute', top: '10px', right: '10px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}
-                                title={(userToken || adminToken) ? "Sevimlilərə əlavə et" : "Qeydiyyat tələb olunur"}
+                                title={userToken ? "Sevimlilərə əlavə et" : "Qeydiyyat tələb olunur"}
                             >
-                                <Heart size={20} color={isFavorite(p.id) ? '#ef4444' : '#94a3b8'} fill={isFavorite(p.id) ? '#ef4444' : 'none'} />
+                                <Heart size={20} color={isFavorite(p._id || p.id) ? '#ef4444' : '#94a3b8'} fill={isFavorite(p._id || p.id) ? '#ef4444' : 'none'} />
                             </button>
 
                             {p.images && p.images.length > 0 ? (
-                                <img src={`${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
+                                <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                             ) : (
                                 <div className="property-image" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}><ImageIcon size={48} /></div>
                             )}
