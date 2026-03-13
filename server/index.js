@@ -19,14 +19,35 @@ const USER_SECRET_KEY = process.env.USER_SECRET_KEY || 'makler_user_secret_123';
 
 // Middleware
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsers only for non-multipart requests
+app.use((req, res, next) => {
+    const contentType = req.headers['content-type'] || '';
+    if (contentType.includes('multipart/form-data')) {
+        // Skip body parsing for file uploads - multer will handle it
+        return next();
+    }
+    express.json()(req, res, (err) => {
+        if (err) return next(err);
+        express.urlencoded({ extended: true })(req, res, next);
+    });
+});
 
 // MongoDB Connection
+let isConnected = false;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/makler_az';
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+
+const connectDB = async () => {
+    if (isConnected) return;
+    try {
+        await mongoose.connect(MONGO_URI);
+        isConnected = true;
+        console.log('Connected to MongoDB');
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+    }
+};
+connectDB();
 
 // Cloudinary configuration
 cloudinary.config({
@@ -40,7 +61,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'makler_az',
-    allowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
   },
 });
 const upload = multer({ storage });
