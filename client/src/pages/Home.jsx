@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Search, MapPin, Bed, Square, Image as ImageIcon, Heart } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const categoryNames = { menzil: "Mənzil", heyet_evi: "Həyət evi", qaraj: "Qaraj", obyekt: "Obyekt", torpaq: "Torpaq", ofis: "Ofis" };
 const metroStations = [

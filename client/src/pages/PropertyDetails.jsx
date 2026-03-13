@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { MapPin, Bed, Square, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const PropertyDetails = () => {
     const { id } = useParams();
