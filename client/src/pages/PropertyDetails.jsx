@@ -21,11 +21,20 @@ const PropertyDetails = () => {
             try {
                 // Fetch details
                 const res = await axios.get(`${API_URL}/api/properties/${id}`);
-                setProperty(res.data.property);
+                
+                if (typeof res.data === 'string' && res.data.includes('<!DOCTYPE html>')) {
+                    throw new Error('Server returned HTML instead of JSON');
+                }
+                
+                if (res.data && res.data.property) {
+                    setProperty(res.data.property);
+                }
 
-                // Fetch related (just grab all and slice for simplicity)
+                // Fetch related
                 const relRes = await axios.get(`${API_URL}/api/properties`);
-                setRelated(relRes.data.properties.filter(p => p.id !== parseInt(id)).slice(0, 4));
+                if (relRes.data && relRes.data.properties) {
+                    setRelated(relRes.data.properties.filter(p => (p._id || p.id).toString() !== id.toString()).slice(0, 4));
+                }
             } catch (err) {
                 console.error(err);
             } finally {

@@ -54,7 +54,9 @@ const Home = () => {
             const res = await axios.get(`${API_URL}/api/user/favorites`, {
                 headers: { Authorization: `Bearer ${userToken}` }
             });
-            setFavorites(res.data.properties.map(p => p._id)); // Store only IDs
+            if (res.data && res.data.properties) {
+                setFavorites(res.data.properties.map(p => p._id)); // Store only IDs
+            }
         } catch (error) {
             console.error('Error fetching favorites', error);
         }
@@ -85,9 +87,20 @@ const Home = () => {
         try {
             const queryParams = new URLSearchParams(params).toString();
             const res = await axios.get(`${API_URL}/api/properties?${queryParams}`);
-            setProperties(res.data.properties);
+            
+            // Safety check: if we got HTML instead of JSON (common on deployment errors)
+            if (typeof res.data === 'string' && res.data.includes('<!DOCTYPE html>')) {
+                throw new Error('Server returned HTML instead of JSON. Check API_URL configuration.');
+            }
+
+            if (res.data && res.data.properties) {
+                setProperties(res.data.properties);
+            } else {
+                setProperties([]);
+            }
         } catch (error) {
-            console.error(error);
+            console.error('API Error:', error);
+            addToast('Məlumatları yükləyərkən xəta baş verdi. Zəhmət olmasa yenidən yoxlayın.', 'error');
         } finally {
             setLoading(false);
         }
