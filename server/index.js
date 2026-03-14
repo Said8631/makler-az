@@ -190,17 +190,31 @@ app.post('/api/properties', authAdmin, upload.array('images', 15), async (req, r
     try {
         const { title, transactionType, category, location, price, rooms, area, description, metro } = req.body;
         
+        if (!title || !price || !location) {
+            return res.status(400).json({ error: 'Başlıq, qiymət və yerləşmə mütləqdir' });
+        }
+
         // Cloudinary returns file.path as the URL
         const imagePaths = req.files ? req.files.map(file => file.path) : [];
         
         const newProperty = new Property({
-            title, transactionType, category, location, price, rooms: rooms || undefined, area: area || undefined, description, metro, images: imagePaths
+            title, 
+            transactionType, 
+            category, 
+            location, 
+            price: Number(price), 
+            rooms: rooms ? Number(rooms) : undefined, 
+            area: area ? Number(area) : undefined, 
+            description, 
+            metro, 
+            images: imagePaths
         });
         
         await newProperty.save();
         res.status(201).json({ message: 'Property created successfully', id: newProperty._id, property: newProperty });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        console.error('Property creation error:', err);
+        res.status(400).json({ error: err.message || 'Elan yaradılarkən xəta baş verdi' });
     }
 });
 
@@ -209,7 +223,15 @@ app.put('/api/properties/:id', authAdmin, upload.array('images', 15), async (req
         const { title, transactionType, category, location, price, rooms, area, description, metro } = req.body;
         
         let updateData = {
-            title, transactionType, category, location, price, rooms: rooms || undefined, area: area || undefined, description, metro
+            title, 
+            transactionType, 
+            category, 
+            location, 
+            price: price ? Number(price) : undefined, 
+            rooms: rooms ? Number(rooms) : undefined, 
+            area: area ? Number(area) : undefined, 
+            description, 
+            metro
         };
         
         // Remove undefined fields
@@ -224,7 +246,8 @@ app.put('/api/properties/:id', authAdmin, upload.array('images', 15), async (req
         
         res.json({ message: 'Property updated successfully', property: updatedProperty });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        console.error('Property update error:', err);
+        res.status(400).json({ error: err.message || 'Elan yenilənərkən xəta baş verdi' });
     }
 });
 
