@@ -112,7 +112,10 @@ const Admin = () => {
             fetchProperties();
         } catch (error) {
             console.error(error);
-            const backendError = error.response?.data?.error || error.response?.data?.message;
+            let backendError = error.response?.data?.error || error.response?.data?.message;
+            if (typeof error.response?.data === 'string' && error.response.data.includes('<!DOCTYPE html>')) {
+                backendError = 'Server HTML cavabı qaytardı. Ola bilsin backend ayarları yanlışdır.';
+            }
             
             if (error.response?.status === 401 || error.response?.status === 403) {
                 addToast('Sessiya bitib, yenidən daxil olun', 'error');

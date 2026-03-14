@@ -352,6 +352,12 @@ app.post('/api/seed', async (req, res) => {
     }
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err);
+    res.status(500).json({ error: err.message || 'Server daxili xətası baş verdi' });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
