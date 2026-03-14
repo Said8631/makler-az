@@ -112,12 +112,14 @@ const Admin = () => {
             fetchProperties();
         } catch (error) {
             console.error(error);
+            const backendError = error.response?.data?.error || error.response?.data?.message;
+            
             if (error.response?.status === 401 || error.response?.status === 403) {
                 addToast('Sessiya bitib, yenidən daxil olun', 'error');
                 localStorage.removeItem('adminToken');
                 navigate('/login');
             } else {
-                addToast('Elan əlavə edilərkən xəta baş verdi', 'error');
+                addToast(backendError || 'Elan əlavə edilərkən xəta baş verdi', 'error');
             }
         } finally {
             setLoading(false);

@@ -327,6 +327,16 @@ app.get('/api/user/favorites/:property_id/check', authUser, async (req, res) => 
     }
 });
 
+// Status check for debugging
+app.get('/api/status', (req, res) => {
+    res.json({
+        mongodb: isConnected ? 'connected' : 'disconnected',
+        cloudinary: !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET),
+        port: PORT,
+        node_env: process.env.NODE_ENV
+    });
+});
+
 // Default seed data
 app.post('/api/seed', async (req, res) => {
     try {
