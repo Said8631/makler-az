@@ -142,7 +142,7 @@ const Admin = () => {
     };
 
     const handleEditItem = (p) => {
-        setEditingId(p.id);
+        setEditingId(p._id);
         setFormData({
             title: p.title || '',
             transactionType: p.transactionType || 'satish',
@@ -272,11 +272,11 @@ const Admin = () => {
                             </thead>
                             <tbody>
                                 {properties.map(p => (
-                                    <tr key={p.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                        <td style={{ padding: '12px' }}>#{p.id}</td>
+                                    <tr key={p._id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                        <td style={{ padding: '12px' }}>#{p._id}</td>
                                         <td style={{ padding: '12px' }}>
                                             {p.images && p.images.length > 0 ? (
-                                                <img src={`${API_URL}${p.images[0]}`} alt="cover" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
+                                                <img src={p.images[0]} alt="cover" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }} />
                                             ) : (
                                                 <div style={{ width: '50px', height: '50px', background: '#e2e8f0', borderRadius: '4px' }}></div>
                                             )}
@@ -289,7 +289,7 @@ const Admin = () => {
                                                 <button onClick={() => handleEditItem(p)} style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <Edit size={18} /> Düzənlə
                                                 </button>
-                                                <button onClick={() => handleDelete(p.id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <button onClick={() => handleDelete(p._id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <Trash2 size={18} /> Sil
                                                 </button>
                                             </div>

@@ -46,34 +46,34 @@ export const deleteProperty = async (id, token) => {
 };
 
 // User Registration
-export const userRegister = async (username, email, password) => {
-  return apiClient.post('/api/register', { username, email, password });
+export const userRegister = async (username, password) => {
+  return apiClient.post('/api/register', { username, password });
 };
 
 // User Login
-export const userLogin = async (emailOrUsername, password) => {
-  return apiClient.post('/api/user-login', { emailOrUsername, password });
+export const userLogin = async (username, password) => {
+  return apiClient.post('/api/user/login', { username, password });
 };
 
 // Favorites
-export const getUserFavorites = async (userId, token) => {
-  return apiClient.get(`/api/favorites/${userId}`, {
+export const getUserFavorites = async (token) => {
+  return apiClient.get('/api/user/favorites', {
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
 };
 
-export const addFavorite = async (userId, propertyId, token) => {
-  return apiClient.post('/api/favorites', { userId, propertyId }, {
+export const addFavorite = async (propertyId, token) => {
+  return apiClient.post('/api/user/favorites', { property_id: propertyId }, {
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
 };
 
-export const removeFavorite = async (userId, propertyId, token) => {
-  return apiClient.delete(`/api/favorites/${userId}/${propertyId}`, {
+export const removeFavorite = async (propertyId, token) => {
+  return apiClient.delete(`/api/user/favorites/${propertyId}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }

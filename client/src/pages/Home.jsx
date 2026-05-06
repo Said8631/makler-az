@@ -125,7 +125,7 @@ const Home = () => {
             return;
         }
 
-        const propId = property._id || property.id;
+        const propId = property._id;
         const isFav = isFavorite(propId);
 
         try {
@@ -186,7 +186,7 @@ const Home = () => {
                                 }}>
                                     {searchResults.length > 0 ? (
                                         searchResults.map(p => (
-                                            <div key={p._id || p.id} className="dropdown-item" onClick={() => navigate(`/property/${p._id || p.id}`)} style={{
+                                            <div key={p._id} className="dropdown-item" onClick={() => navigate(`/property/${p._id}`)} style={{
                                                 padding: '12px 16px', borderBottom: '1px solid var(--border-color)',
                                                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '16px'
                                             }}>
@@ -245,7 +245,7 @@ const Home = () => {
                                 style={{ position: 'absolute', top: '10px', right: '10px', background: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', zIndex: 10 }}
                                 title={userToken ? "Sevimlilərə əlavə et" : "Qeydiyyat tələb olunur"}
                             >
-                                <Heart size={20} color={isFavorite(p._id || p.id) ? '#ef4444' : '#94a3b8'} fill={isFavorite(p._id || p.id) ? '#ef4444' : 'none'} />
+                                <Heart size={20} color={isFavorite(p._id) ? '#ef4444' : '#94a3b8'} fill={isFavorite(p._id) ? '#ef4444' : 'none'} />
                             </button>
 
                             {p.images && p.images.length > 0 ? (

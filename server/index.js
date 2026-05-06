@@ -19,19 +19,8 @@ const USER_SECRET_KEY = process.env.USER_SECRET_KEY || 'makler_user_secret_123';
 
 // Middleware
 app.use(cors());
-
-// Body parsers only for non-multipart requests
-app.use((req, res, next) => {
-    const contentType = req.headers['content-type'] || '';
-    if (contentType.includes('multipart/form-data')) {
-        // Skip body parsing for file uploads - multer will handle it
-        return next();
-    }
-    express.json()(req, res, (err) => {
-        if (err) return next(err);
-        express.urlencoded({ extended: true })(req, res, next);
-    });
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
 let isConnected = false;

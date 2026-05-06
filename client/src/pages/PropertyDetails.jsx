@@ -118,7 +118,7 @@ const PropertyDetails = () => {
                         <h3 style={{ fontSize: '24px', marginBottom: '20px' }}>Daha Çox Elanlar</h3>
                         <div className="listings-grid">
                             {related.map(p => (
-                                <div key={p.id} className="property-card" onClick={() => navigate(`/property/${p.id}`)} style={{ cursor: 'pointer' }}>
+                                <div key={p._id} className="property-card" onClick={() => navigate(`/property/${p._id}`)} style={{ cursor: 'pointer' }}>
                                     {p.images && p.images.length > 0 ? (
                                         <img src={p.images[0].startsWith('http') ? p.images[0] : `${API_URL}${p.images[0]}`} alt={p.title} className="property-image" />
                                     ) : (
